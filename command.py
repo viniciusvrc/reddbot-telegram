@@ -183,7 +183,7 @@ def statistics(bot,update):
     block_height = getinfo_json['blocks']
     money_supply = getinfo_json['moneysupply']
     net_stake_weight = getstakinginfo_json['netstakeweight']
-    staking_quota = '{0:,.2f}'.format(float(net_stake_weight) / float(moneysupply) * 100)
+    staking_quota = '{0:,.2f}'.format(float(net_stake_weight) / float(money_supply) * 100)
     block_height = '{0:,.0f}'.format(block_height)
     money_supply = '{0:,.0f}'.format(money_supply)
     net_stake_weight = '{0:,.0f}'.format(net_stake_weight)
@@ -255,7 +255,7 @@ def strfdelta(tdelta, fmt='{D:02}d {H:02}h {M:02}m {S:02}s', inputtype='timedelt
         remainder = int(tdelta)*60
     elif inputtype in ['h', 'hours']:
         remainder = int(tdelta)*3600
-    elif inputtype in ['d', 'days']:
+    elif inputtype in ['d', 'days']::
         remainder = int(tdelta)*86400
     elif inputtype in ['w', 'weeks']:
         remainder = int(tdelta)*604800
