@@ -194,7 +194,7 @@ def statistics(bot,update):
     time_to_party = strfdelta(diff, inputtype='m')
     diff = '{0:,.0f}'.format(diff)
     next_party_block = '{0:,.0f}'.format(int(next_party_block))
-	tada_emoji = emojize(':tada:', use_aliases=True)
+    tada_emoji = emojize(':tada:', use_aliases=True)
     block_height_msg = '-> With current block height of {0} there are {1} left to block {2}! Countdown: {3} {4}\n'.format(block_height,diff,next_party_block,time_to_party,tada_emoji)
     netstake_weight_msg = '-> There are currently {0} ({1}%) Reddcoins beeing staked from a total of {2}'.format(net_stake_weight,staking_quota,money_supply)
     bot.send_message(chat_id=update.message.chat_id, text=block_height_msg + netstake_weight_msg)
