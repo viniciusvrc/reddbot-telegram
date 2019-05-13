@@ -180,21 +180,21 @@ def statistics(bot,update):
     getstakinginfo = subprocess.run([core,'getstakinginfo'],stdout=subprocess.PIPE).stdout.strip().decode(encoding)
     getinfo_json = json.loads(getinfo)
     getstakinginfo_json = json.loads(getstakinginfo)
-	  block_height = getinfo_json['blocks']
-	  money_supply = getinfo_json['moneysupply']
-	  net_stake_weight = getstakinginfo_json['netstakeweight']
-	  staking_quota = '{0:,.2f}'.format(float(net_stake_weight) / float(moneysupply) * 100)
-	  block_height = '{0:,.0f}'.format(block_height)
-	  money_supply = '{0:,.0f}'.format(money_supply)
-	  net_stake_weight = '{0:,.0f}'.format(net_stake_weight)
-	  next_party_block = str(int(block_height[:block_height.find(',')]) + 1)
-	  next_party_block = next_party_block.ljust(len(str(getinfo_json['blocks'])), '0')
-	  diff = int(next_party_block) - getinfo_json['blocks']
-	  time_to_party = strfdelta(diff, inputtype='m')
-	  diff = '{0:,.0f}'.format(diff)
-	  next_party_block = '{0:,.0f}'.format(int(next_party_block))
-	  block_height_msg = 'With current block height of ${0} there are ${1} left to block ${2}! Countdown: ${3} :tada:\n'.format(block_height,diff,next_party_block,time_to_party)
-	  netstake_weight_msg = 'There are currently ${0} (${1}%) Reddcoins beeing staked from a total of ${2}'.format(net_stake_weight,staking_quota,money_supply)
+    block_height = getinfo_json['blocks']
+    money_supply = getinfo_json['moneysupply']
+    net_stake_weight = getstakinginfo_json['netstakeweight']
+    staking_quota = '{0:,.2f}'.format(float(net_stake_weight) / float(moneysupply) * 100)
+    block_height = '{0:,.0f}'.format(block_height)
+    money_supply = '{0:,.0f}'.format(money_supply)
+    net_stake_weight = '{0:,.0f}'.format(net_stake_weight)
+    next_party_block = str(int(block_height[:block_height.find(',')]) + 1)
+    next_party_block = next_party_block.ljust(len(str(getinfo_json['blocks'])), '0')
+    diff = int(next_party_block) - getinfo_json['blocks']
+    time_to_party = strfdelta(diff, inputtype='m')
+    diff = '{0:,.0f}'.format(diff)
+    next_party_block = '{0:,.0f}'.format(int(next_party_block))
+    block_height_msg = 'With current block height of ${0} there are ${1} left to block ${2}! Countdown: ${3} :tada:\n'.format(block_height,diff,next_party_block,time_to_party)
+    netstake_weight_msg = 'There are currently ${0} (${1}%) Reddcoins beeing staked from a total of ${2}'.format(net_stake_weight,staking_quota,money_supply)
     bot.send_message(chat_id=update.message.chat_id, text=block_height_msg)
 
 def createQRcode(value):
@@ -274,38 +274,41 @@ from telegram.ext import CommandHandler
  
 start_handler = CommandHandler('start', commands)
 dispatcher.add_handler(start_handler)
- 
+
 commands_handler = CommandHandler('commands', commands)
 dispatcher.add_handler(commands_handler)
- 
+
 moon_handler = CommandHandler('moon', moon)
 dispatcher.add_handler(moon_handler)
- 
+
 when_handler = CommandHandler('when', when)
 dispatcher.add_handler(when_handler)
- 
+
+statistics_handler = CommandHandler('statistics', statistics)
+dispatcher.add_handler(statistics_handler)
+
 hi_handler = CommandHandler('hi', hi)
 dispatcher.add_handler(hi_handler)
- 
+
 withdraw_handler = CommandHandler('withdraw', withdraw)
 dispatcher.add_handler(withdraw_handler)
- 
+
 marketcap_handler = CommandHandler('marketcap', marketcap)
 dispatcher.add_handler(marketcap_handler)
- 
+
 deposit_handler = CommandHandler('deposit', deposit)
 dispatcher.add_handler(deposit_handler)
- 
+
 price_handler = CommandHandler('price', price)
 dispatcher.add_handler(price_handler)
- 
+
 tip_handler = CommandHandler('tip', tip)
 dispatcher.add_handler(tip_handler)
- 
+
 balance_handler = CommandHandler('balance', balance)
 dispatcher.add_handler(balance_handler)
- 
+
 help_handler = CommandHandler('help', help)
 dispatcher.add_handler(help_handler)
- 
+
 updater.start_polling()
