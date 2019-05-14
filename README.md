@@ -25,7 +25,7 @@
 * Setup a bot with the user @BotFather through PM on Telegram, after going through a setup you will be given a bot token. Edit the command.py file and replace the parameter 'BOT_TOKEN' with the one you just recieved. 
 
 *  Run the script 
-`python3 command.py`
+`nohup python3 command.py > bot.log 2>&1`
 
 *  Initiate the bot by inviting it to a chat or via PM, some commands are `/balance` , `/price` , `/help` and to find out the format related to tip others and withdrawal of funds use `/commands`.
 
