@@ -51,11 +51,11 @@ def commands(bot, update):
     else:
         user = " @" + user 
     wave_emoji = get_emoji(":wave:")
-    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <username> = target user to tip (starting with @) \n <amount> = amount of Reddcoin to utilize \n <address> = Reddcoin address to withdraw to \n \n Tipping format: \n /tip <username> <amount> \n \n Withdrawing format: \n /withdraw <address> <amount>".format(user, wave_emoji)
+    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <username> = target user to tip (starting with @) \n <amount> = amount of Reddcoin to utilize \n <address> = Reddcoin address to withdraw to \n \n Tipping format: \n /tip <username> <amount> \n \n Withdrawing format: \n /withdraw <address> <amount> \n \n Need more help? \n -> /help".format(user, wave_emoji)
     send_text_msg(bot, update, commands_msg)
 
 def help(bot, update):
-    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /price , /marketcap or /balance"
+    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when <moon|mars|jupiter|saturn|uranus|lambo>\n \nExamples: \n`/tip @TechAdept 100` - send a tip of 100 Reddcoins to our CEO Jay 'TechAdept' Laurence \n`/withdraw RaWe7UEQ1p2PYmdwbCxAThrq4GucNh3Q6s 100` - send 100 Reddcoins to development fund raising address"
     send_text_msg(bot, update, help_msg)
 
 def deposit(bot, update):
