@@ -41,7 +41,6 @@ reddcoin_rocket_ani = animation_home + "reddcoin_rocket.mp4"
 when_moon_ani = animation_home + "when_moon.mp4"
 when_mars_ani = animation_home + "when_mars.mp4"
 when_jupiter_ani = animation_home + "when_jupiter.mp4"
-when_binance_ani = animation_home + "when_binance.mp4"
 when_lambo_ani = animation_home + "when_lambo.mp4"
 qrcode_logo_img = image_home + "rdd_qrcode_logo.png"
 
@@ -124,7 +123,7 @@ def balance(bot,update):
         fiat_balance = balance * price
         fiat_balance = str(round(fiat_balance,3))
         balance = "{0:,.2f}".format(balance)
-        balance_msg = "@{0} your current balance is: `Ɍ{1}` ≈ `${2}`".format(user,balance,fiat_balance)
+        balance_msg = "@{0} your current balance is: Ɍ`{1}` ≈ $`{2}`".format(user,balance,fiat_balance)
         send_text_msg(bot, update, balance_msg)
 
 def price(bot,update):
@@ -152,7 +151,7 @@ def price(bot,update):
         sats = sats[:10]
     price_change = price_change.replace("(","")
     price_change = price_change.replace(")","")
-    price_msg = "1 Reddcoin is valued at `${0}` Δ `{1}{2}` ≈ `₿{3}`".format(price,change_symbol,price_change,sats)
+    price_msg = "1 Reddcoin is valued at $`{0}` Δ {1}`{2}` ≈ ₿`{3}`".format(price,change_symbol,price_change,sats)
     send_text_msg(bot, update, price_msg)
 
 def withdraw(bot,update):
@@ -161,14 +160,12 @@ def withdraw(bot,update):
         no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
         send_text_msg(bot, update, no_user_msg)
     else:
-        target = update.message.text[9:]
-        address = target[:35]
-        address = "".join(str(e) for e in address)
-        target = target.replace(target[:35], "")
-        amount = float(target)
+        target = update.message.text[10:]
+        address = target.split(" ")[0]
+        amount = float(target.split(" ")[1])
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
-        clean = (result.stdout.strip()).decode(encoding)
-        balance = float(clean)
+        balance = (result.stdout.strip()).decode(encoding)
+        balance = float(balance)
         if balance < amount:
             neutral_face_emoji = get_emoji(":neutral_face:")
             empty_balance_msg = "Sorry @{0}, but you have insufficient funds {1}".format(user, neutral_face_emoji)
@@ -176,7 +173,8 @@ def withdraw(bot,update):
         else:
             amount = str(amount)
             tx = subprocess.run([core,"sendfrom",user,address,amount],stdout=subprocess.PIPE)
-            withdraw_msg = "@{0} has successfully withdrew to address: `{1}` of `{2} RDD` (transaction: https://live.reddcoin.com/tx/{3})".format(user, address, amount, tx)
+            tx = (tx.stdout.strip()).decode(encoding)
+            withdraw_msg = "@{0} has successfully withdrew to address `{1}` of `{2} RDD` (transaction: https://live.reddcoin.com/tx/{3})".format(user, address, amount, tx)
             send_text_msg(bot, update, withdraw_msg)
 
 def hi(bot,update):
@@ -191,7 +189,7 @@ def moon(bot,update):
 def when(bot,update):
     user_text = update.message.text[6:].lower()
     max_wait_time = 31536000
-    random_seconds = randint(1, max_wait_time)
+    random_seconds = randint(max_wait_time / 1000, max_wait_time)
     if user_text == "moon":
         guessing_time = strfdelta(random_seconds * 2, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
         moon_msg = "Very soon my friend! Only about `{0}`".format(guessing_time)
@@ -212,10 +210,6 @@ def when(bot,update):
         triumph_emoji = get_emoji(":triumph:")
         uranus_msg = "You can go. I will stay here {0}".format(triumph_emoji)
         send_text_msg(bot, update, uranus_msg)
-    elif user_text == "binance":
-        guessing_time = strfdelta(random_seconds * 10, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        binance_msg = "Maybe around `{0}`".format(guessing_time)
-        send_animation_msg(bot, update, when_binance_ani, binance_msg)
     elif user_text == "lambo":
         guessing_time = strfdelta(random_seconds * 5, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
         lambo_msg = "Very soon my friend -> `{0}`".format(guessing_time)
@@ -236,7 +230,7 @@ def marketcap(bot,update):
     marketcap_raw = soup.get_text().replace("\n","")
     marketcap_usd = marketcap_raw[:marketcap_raw.find("USD")]
     marketcap_btc = marketcap_raw[marketcap_raw.find("USD") + 3:marketcap_raw.find("BTC")]
-    marketcap_msg = "The current market cap of Reddcoin is valued at `${0}` ≈ `₿{1}`".format(marketcap_usd, marketcap_btc)
+    marketcap_msg = "The current market cap of Reddcoin is valued at $`{0}` ≈ ₿`{1}`".format(marketcap_usd, marketcap_btc)
     send_text_msg(bot, update, marketcap_msg)
 
 def statistics(bot,update):
