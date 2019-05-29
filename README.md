@@ -1,4 +1,4 @@
-# Reddbot - Telegram Reddcoin Tipbot.
+# Reddbot - Telegram Reddcoin Tipbot v2.0
  
 #### Reddcoin crypto currency tipbot for [Telegram](https://telegram.org)
 
@@ -19,12 +19,15 @@
 
 ## Setup
 
-* Download the git
+* Download the git: 
 `git clone https://github.com/cryptoBUZE/reddbot-telegram`
 
-* Setup a bot with the user @BotFather through PM on Telegram, after going through a setup you will be given a bot token. Edit the command.py file and replace the parameter 'BOT_TOKEN' with the one you just recieved. 
+* Setup a bot with the user @BotFather through PM on Telegram, after going through a setup you will be given a bot token. Edit the command.py file and replace the parameter 'BOT_TOKEN' and 'bot_name' with the one you just recieved/defined. Also change following parameters to match corresponding values of your server:
 
-*  Run the script 
+`core = "/home/rdd/reddcoind"`
+`reddbot_home = "/home/rdd/reddbot/"`
+
+*  Run the script: 
 `nohup python3 command.py > bot.log 2>&1`
 
 *  Initiate the bot by inviting it to a chat or via PM, some commands are `/balance` , `/price` , `/help` and to find out the format related to tip others and withdrawal of funds use `/commands`.
