@@ -35,6 +35,7 @@ encoding = "utf-8"
 core = "/home/rdd/reddcoind"
 data_origin = "https://coinmarketcap.com/currencies/reddcoin"
 reddbot_home = "/home/rdd/reddbot/"
+dev_fund_address = "Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc"
 animation_home = reddbot_home + "animation/"
 image_home = reddbot_home + "image/"
 reddcoin_rocket_ani = animation_home + "reddcoin_rocket.mp4"
@@ -55,13 +56,13 @@ def commands(bot, update):
     send_text_msg(bot, update, commands_msg)
 
 def help(bot, update):
-    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when <moon|mars|jupiter|saturn|uranus|lambo>\n \nExamples: \n`/tip @TechAdept 100` - send a tip of 100 Reddcoins to our CEO Jay 'TechAdept' Laurence \n`/withdraw RaWe7UEQ1p2PYmdwbCxAThrq4GucNh3Q6s 100` - send 100 Reddcoins to development fund raising address"
+    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when <moon|mars|jupiter|saturn|uranus|lambo>\n \nExamples: \n`/tip @TechAdept 100` - send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence \n`/withdraw {0} 100` - send 100 Reddcoins to development fund raising address".format(dev_fund_address)
     send_text_msg(bot, update, help_msg)
 
 def deposit(bot, update):
     user = update.message.from_user.username
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         result = subprocess.run([core,"getaccountaddress",user],stdout=subprocess.PIPE)
@@ -76,7 +77,7 @@ def tip(bot,update):
     amount = target.split(" ")[1]
     target = target.split(" ")[0]
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         if target == bot_name:
@@ -101,7 +102,7 @@ def tip(bot,update):
                 tip_msg = "@{0} tipped @{1} of {2} RDD".format(user, target, amount)
                 send_text_msg(bot, update, tip_msg)
         else:
-            wrong_format = "Error that user is not applicable."
+            wrong_format = "Error that user is not applicable. Need help? -> /help"
             send_text_msg(bot, update, wrong_format)
 
 def balance(bot,update):
