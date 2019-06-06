@@ -52,11 +52,11 @@ def commands(bot, update):
     else:
         user = " @" + user 
     wave_emoji = get_emoji(":wave:")
-    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <username> = target user to tip (starting with @) \n <amount> = amount of Reddcoin to utilize \n <address> = Reddcoin address to withdraw to \n \n Tipping format: \n /tip <username> <amount> \n \n Withdrawing format: \n /withdraw <address> <amount> \n \n Need more help? \n -> /help".format(user, wave_emoji)
+    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <code>username</code> = target user to tip (starting with @) \n <code>amount</code> = amount of Reddcoin to utilize \n <code>address</code> = Reddcoin address to withdraw to \n \n Tipping format: \n <code>/tip @username amount</code> \n \n Withdrawing format: \n <code>/withdraw address amount</code> \n \n Need more help? -> /help".format(user, wave_emoji)
     send_text_msg(bot, update, commands_msg)
 
 def help(bot, update):
-    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when <moon|mars|jupiter|saturn|uranus|lambo>\n \nExamples: \n`/tip @TechAdept 100` - send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence \n`/withdraw {0} 100` - send 100 Reddcoins to development fund raising address".format(dev_fund_address)
+    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when moon|mars|jupiter|saturn|uranus|lambo\n \nExamples: \n<code>/tip @TechAdept 100</code> - send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence \n<code>/withdraw {0} 100</code> - send 100 Reddcoins to development fund raising address".format(dev_fund_address)
     send_text_msg(bot, update, help_msg)
 
 def deposit(bot, update):
@@ -73,13 +73,16 @@ def deposit(bot, update):
 
 def tip(bot,update):
     user = update.message.from_user.username
-    target = update.message.text[5:]
-    amount = target.split(" ")[1]
-    target = target.split(" ")[0]
-    if user is None:
+    user_input = update.message.text[5:].strip()
+    if user_input == "":
+        no_parameters = "There is something missing! See /help for an example."
+        send_text_msg(bot, update, no_parameters)
+    elif user is None:
         no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
+        target = user_input.split(" ")[0]
+        amount = user_input.split(" ")[1]
         if target == bot_name:
             hodl_msg = "HODL."
             send_text_msg(bot, update, hodl_msg)
@@ -126,7 +129,7 @@ def balance(bot,update):
         fiat_balance = "{0:,.3f}".format(fiat_balance)
         balance = "{0:,.8f}".format(balance)
         balance = balance.rstrip("0")
-        balance_msg = "@{0} your current balance is: Ɍ`{1}` ≈ $`{2}`".format(user,balance,fiat_balance)
+        balance_msg = "@{0} your current balance is: Ɍ<code>{1}</code> ≈ $<code>{2}</code>".format(user,balance,fiat_balance)
         send_text_msg(bot, update, balance_msg)
 
 def price(bot,update):
@@ -154,18 +157,21 @@ def price(bot,update):
         sats = sats[:10]
     price_change = price_change.replace("(","")
     price_change = price_change.replace(")","")
-    price_msg = "1 Reddcoin is valued at $`{0}` Δ {1}`{2}` ≈ ₿`{3}`".format(price,change_symbol,price_change,sats)
+    price_msg = "1 Reddcoin is valued at $<code>{0}</code> Δ {1}<code>{2}</code> ≈ ₿<code>{3}</code>".format(price,change_symbol,price_change,sats)
     send_text_msg(bot, update, price_msg)
 
 def withdraw(bot,update):
     user = update.message.from_user.username
-    if user is None:
+    user_input = update.message.text[10:].strip()
+    if user_input == "":
+        no_parameters = "There is something missing! See /help for an example."
+        send_text_msg(bot, update, no_parameters)
+    elif user is None:
         no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
         send_text_msg(bot, update, no_user_msg)
     else:
-        target = update.message.text[10:]
-        address = target.split(" ")[0]
-        amount = float(target.split(" ")[1])
+        address = user_input.split(" ")[0]
+        amount = float(user_input.split(" ")[1])
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
         balance = (result.stdout.strip()).decode(encoding)
         balance = float(balance)
@@ -177,7 +183,7 @@ def withdraw(bot,update):
             amount = str(amount)
             tx = subprocess.run([core,"sendfrom",user,address,amount],stdout=subprocess.PIPE)
             tx = (tx.stdout.strip()).decode(encoding)
-            withdraw_msg = "@{0} has successfully withdrew to address `{1}` of `{2} RDD` (transaction: https://live.reddcoin.com/tx/{3})".format(user, address, amount, tx)
+            withdraw_msg = "@{0} has successfully withdrew to address <code>{1}</code> of <code>{2} RDD</code> (transaction: https://live.reddcoin.com/tx/{3})".format(user, address, amount, tx)
             send_text_msg(bot, update, withdraw_msg)
 
 def hi(bot,update):
@@ -190,34 +196,34 @@ def moon(bot,update):
     send_animation_msg(bot, update, reddcoin_rocket_ani, moon_msg)
 
 def when(bot,update):
-    user_text = update.message.text[6:].lower()
+    user_input = update.message.text[6:].strip().lower()
     max_wait_time = 31536000
     random_seconds = randint(max_wait_time / 1000, max_wait_time)
-    if user_text == "moon":
+    if user_input == "moon":
         guessing_time = strfdelta(random_seconds * 2, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        moon_msg = "Soon! Only about `{0}`".format(guessing_time)
+        moon_msg = "Soon! Only about {0}".format(guessing_time)
         send_animation_msg(bot, update, when_moon_ani, moon_msg)
-    elif user_text == "mars":
+    elif user_input == "mars":
         guessing_time = strfdelta(random_seconds * 4, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        mars_msg = "Challenge accepted! This will take about `{0}`".format(guessing_time)
+        mars_msg = "Challenge accepted! This will take about {0}".format(guessing_time)
         send_animation_msg(bot, update, when_mars_ani, mars_msg)
-    elif user_text == "jupiter":
+    elif user_input == "jupiter":
         guessing_time = strfdelta(random_seconds * 8, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        jupiter_msg = "You must be crazy! Take a deep breath while we wait for `{0}`".format(guessing_time)
+        jupiter_msg = "You must be crazy! Take a deep breath while we wait for {0}".format(guessing_time)
         send_animation_msg(bot, update, when_jupiter_ani, jupiter_msg)
-    elif user_text == "saturn":
+    elif user_input == "saturn":
         astonished_emoji = get_emoji(":astonished:")
         saturn_msg = "Are you kidding me?! This thing is freezing cold {0}".format(astonished_emoji)
         send_text_msg(bot, update, saturn_msg)
-    elif user_text == "uranus":
+    elif user_input == "uranus":
         triumph_emoji = get_emoji(":triumph:")
         uranus_msg = "You can go. I will stay here {0}".format(triumph_emoji)
         send_text_msg(bot, update, uranus_msg)
-    elif user_text == "lambo":
+    elif user_input == "lambo":
         guessing_time = strfdelta(random_seconds * 5, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        lambo_msg = "Very soon my friend -> `{0}`".format(guessing_time)
+        lambo_msg = "Very soon my friend -> {0}".format(guessing_time)
         send_animation_msg(bot, update, when_lambo_ani, lambo_msg)
-    elif user_text == "":
+    elif user_input == "":
         unamused_emoji = get_emoji(":unamused:")
         no_msg = "Try again -> /help".format(unamused_emoji)
         send_text_msg(bot, update, no_msg)
@@ -233,14 +239,17 @@ def marketcap(bot,update):
     marketcap_raw = soup.get_text().replace("\n","")
     marketcap_usd = marketcap_raw[:marketcap_raw.find("USD")]
     marketcap_btc = marketcap_raw[marketcap_raw.find("USD") + 3:marketcap_raw.find("BTC")]
-    marketcap_msg = "The current market cap of Reddcoin is valued at $`{0}` ≈ ₿`{1}`".format(marketcap_usd, marketcap_btc)
+    marketcap_msg = "The current market cap of Reddcoin is valued at $<code>{0}</code> ≈ ₿<code>{1}</code>".format(marketcap_usd, marketcap_btc)
     send_text_msg(bot, update, marketcap_msg)
 
 def statistics(bot,update):
     getinfo = subprocess.run([core,"getinfo"],stdout=subprocess.PIPE).stdout.strip().decode(encoding)
     getstakinginfo = subprocess.run([core,"getstakinginfo"],stdout=subprocess.PIPE).stdout.strip().decode(encoding)
+    getbalance = subprocess.run([core,"getbalance"],stdout=subprocess.PIPE).stdout.strip().decode(encoding)
+    listaccounts = subprocess.run([core,"listaccounts"],stdout=subprocess.PIPE).stdout.strip().decode(encoding)
     getinfo_json = json.loads(getinfo)
     getstakinginfo_json = json.loads(getstakinginfo)
+    listaccounts_json = json.loads(listaccounts)
     block_height = getinfo_json["blocks"]
     money_supply = getinfo_json["moneysupply"]
     net_stake_weight = getstakinginfo_json["netstakeweight"]
@@ -248,6 +257,9 @@ def statistics(bot,update):
     block_height = "{0:,.0f}".format(block_height)
     money_supply = "{0:,.0f}".format(money_supply)
     net_stake_weight = "{0:,.0f}".format(net_stake_weight)
+    total_balance = "{0:,.8f}".format(float(getbalance))
+    total_balance = total_balance.rstrip("0")
+    total_users = len(listaccounts_json) - 1
     next_party_block = str(int(block_height[:block_height.find(",")]) + 1)
     next_party_block = next_party_block.ljust(len(str(getinfo_json["blocks"])), "0")
     diff = int(next_party_block) - getinfo_json["blocks"]
@@ -256,12 +268,13 @@ def statistics(bot,update):
     next_party_block = "{0:,.0f}".format(int(next_party_block))
     tada_emoji = emojize(":tada:", use_aliases=True)
     check_mark_emoji = emojize(":white_check_mark:", use_aliases=True)
-    block_height_msg = "{0} With current block height of `{1}` there are `{2}` left to block `{3}` {4} -> Countdown: `{5}`\n".format(check_mark_emoji, block_height, diff, next_party_block, tada_emoji, time_to_party)
-    netstake_weight_msg = "{0} There are currently `{1} ({2}%)` Reddcoins being staked from a total of `{3}`".format(check_mark_emoji, net_stake_weight, staking_quota, money_supply)
-    send_text_msg(bot, update, block_height_msg + netstake_weight_msg)
+    block_height_msg = "{0} With current block height of <code>{1}</code> there are <code>{2}</code> left to block <code>{3}</code> {4} -> Countdown: <code>{5}</code>\n".format(check_mark_emoji, block_height, diff, next_party_block, tada_emoji, time_to_party)
+    netstake_weight_msg = "{0} There are currently <code>{1} ({2}%)</code> Reddcoins being staked from a total of <code>{3}</code>\n".format(check_mark_emoji, net_stake_weight, staking_quota, money_supply)
+    accounts_msg = "{0} Our famous Telegram tipping bot {1} is currently holding <code>{2}</code> Reddcoins from <code>{3}</code> users".format(check_mark_emoji, bot_name, total_balance, total_users)
+    send_text_msg(bot, update, block_height_msg + netstake_weight_msg + accounts_msg)
 
 def send_text_msg(bot, update, msg):
-    bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.MARKDOWN)
+    bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.HTML)
 
 def send_photo_msg(bot, update, photo, caption):
     bot.send_photo(chat_id=update.message.chat_id, photo=open(photo, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN)
