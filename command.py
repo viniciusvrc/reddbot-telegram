@@ -121,9 +121,11 @@ def balance(bot,update):
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
         clean = (result.stdout.strip()).decode(encoding)
         balance  = float(clean)
+        print(balance)
         fiat_balance = balance * price
-        fiat_balance = str(round(fiat_balance,3))
-        balance = "{0:,.2f}".format(balance)
+        fiat_balance = "{0:,.3f}".format(fiat_balance)
+        balance = "{0:,.8f}".format(balance)
+        balance = balance.rstrip("0")
         balance_msg = "@{0} your current balance is: Ɍ`{1}` ≈ $`{2}`".format(user,balance,fiat_balance)
         send_text_msg(bot, update, balance_msg)
 
@@ -193,7 +195,7 @@ def when(bot,update):
     random_seconds = randint(max_wait_time / 1000, max_wait_time)
     if user_text == "moon":
         guessing_time = strfdelta(random_seconds * 2, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
-        moon_msg = "Very soon my friend! Only about `{0}`".format(guessing_time)
+        moon_msg = "Soon! Only about `{0}`".format(guessing_time)
         send_animation_msg(bot, update, when_moon_ani, moon_msg)
     elif user_text == "mars":
         guessing_time = strfdelta(random_seconds * 4, "{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="s")
@@ -217,7 +219,7 @@ def when(bot,update):
         send_animation_msg(bot, update, when_lambo_ani, lambo_msg)
     elif user_text == "":
         unamused_emoji = get_emoji(":unamused:")
-        no_msg = "C'mon! Give me something that I don't know! {0}".format(unamused_emoji)
+        no_msg = "Try again -> /help".format(unamused_emoji)
         send_text_msg(bot, update, no_msg)
     else:
         pensive_emoji = get_emoji(":pensive:")
