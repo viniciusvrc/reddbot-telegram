@@ -56,7 +56,7 @@ def commands(bot, update):
     send_text_msg(bot, update, commands_msg)
 
 def help(bot, update):
-    help_msg = "The following commands are at your disposal: /hi , /commands , /deposit , /tip , /withdraw , /balance , /price , /marketcap , /statistics , /moon , /when moon|mars|jupiter|saturn|uranus|lambo\n \nExamples: \n<code>/tip @TechAdept 100</code> - send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence \n<code>/withdraw {0} 100</code> - send 100 Reddcoins to development fund raising address".format(dev_fund_address)
+    help_msg = "The following commands are at your disposal: /hi /commands /deposit /tip /donate /withdraw /balance /price /marketcap /statistics /moon /when moon|mars|jupiter|saturn|uranus|lambo\n \nExamples: \n<code>/tip @TechAdept 100</code> - send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence\n<code>/tip @CryptoGnasher 100</code> - send a tip of 100 Reddcoins to our lead dev John Nash\n<code>/donate 100</code> - support Reddcoin team by donating them 100 Reddcoins\n<code>/withdraw {0} 100</code> - send 100 Reddcoins to a specific address (in this example: dev fund raising address which is also used for /donate)".format(dev_fund_address)
     send_text_msg(bot, update, help_msg)
 
 def deposit(bot, update):
@@ -124,7 +124,6 @@ def balance(bot,update):
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
         clean = (result.stdout.strip()).decode(encoding)
         balance  = float(clean)
-        print(balance)
         fiat_balance = balance * price
         fiat_balance = "{0:,.3f}".format(fiat_balance)
         balance = "{0:,.8f}".format(balance)
@@ -160,9 +159,21 @@ def price(bot,update):
     price_msg = "1 Reddcoin is valued at $<code>{0}</code> Δ {1}<code>{2}</code> ≈ ₿<code>{3}</code>".format(price,change_symbol,price_change,sats)
     send_text_msg(bot, update, price_msg)
 
+def donate(bot,update):
+    user_input = update.message.text[8:].strip()
+    if user_input == "":
+        qrcode_png = create_qr_code(dev_fund_address)
+        donate_msq = "Any donation is highly appreciated: {0}".format(dev_fund_address)
+        send_photo_msg(bot, update, qrcode_png, donate_msq)
+    else:
+        withdraw(bot,update)
+
 def withdraw(bot,update):
     user = update.message.from_user.username
-    user_input = update.message.text[10:].strip()
+    if update.message.text.startswith("/donate"):
+        user_input = update.message.text[8:].strip()
+    else:
+        user_input = update.message.text[10:].strip()
     if user_input == "":
         no_parameters = "There is something missing! See /help for an example."
         send_text_msg(bot, update, no_parameters)
@@ -170,8 +181,12 @@ def withdraw(bot,update):
         no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
         send_text_msg(bot, update, no_user_msg)
     else:
-        address = user_input.split(" ")[0]
-        amount = float(user_input.split(" ")[1])
+        if update.message.text.startswith("/donate"):
+            address = dev_fund_address
+            amount = float(user_input)
+        else:
+            address = user_input.split(" ")[0]
+            amount = float(user_input.split(" ")[1])
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
         balance = (result.stdout.strip()).decode(encoding)
         balance = float(balance)
@@ -308,9 +323,9 @@ def create_qr_code(value):
     
     # put the logo in the qr code and save image
     img.paste(logo, (xmin, ymin, xmax, ymax))
-    img.save(reddbot_home + qrcode_png)
-
-    return qrcode_png
+    img.save(image_home + qrcode_png)
+    
+    return image_home + qrcode_png
 
 def strfdelta(tdelta, fmt="{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="timedelta"):
     """Convert a datetime.timedelta object or a regular number to a custom-
@@ -376,6 +391,9 @@ dispatcher.add_handler(statistics_handler)
 
 hi_handler = CommandHandler("hi", hi)
 dispatcher.add_handler(hi_handler)
+
+donate_handler = CommandHandler("donate", donate)
+dispatcher.add_handler(donate_handler)
 
 withdraw_handler = CommandHandler("withdraw", withdraw)
 dispatcher.add_handler(withdraw_handler)
