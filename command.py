@@ -274,6 +274,7 @@ def statistics(bot,update):
     net_stake_weight = "{0:,.0f}".format(net_stake_weight)
     total_balance = "{0:,.8f}".format(float(getbalance))
     total_balance = total_balance.rstrip("0")
+    total_balance = total_balance.rstrip(".")
     total_users = len(listaccounts_json) - 1
     next_party_block = str(int(block_height[:block_height.find(",")]) + 1)
     next_party_block = next_party_block.ljust(len(str(getinfo_json["blocks"])), "0")
@@ -304,7 +305,8 @@ def get_emoji(emoji_shortcode):
 def create_qr_code(value):
     # Generate the qr code and save as png
     qrcode_png = value + ".png"
-    qrobj = pyqrcode.QRCode(value, error = "H")
+    qrcode_prefix = "reddcoin:"
+    qrobj = pyqrcode.QRCode(qrcode_prefix + value, error = "H")
     qrobj.png(qrcode_png, scale=10, quiet_zone=1)
     
     # Now open that png image to put the logo
