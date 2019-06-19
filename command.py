@@ -36,6 +36,7 @@ core = "/home/rdd/reddcoind"
 data_origin = "https://coinmarketcap.com/currencies/reddcoin"
 reddbot_home = "/home/rdd/reddbot/"
 dev_fund_address = "Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc"
+walletpassphrase = ""
 animation_home = reddbot_home + "animation/"
 image_home = reddbot_home + "image/"
 reddcoin_rocket_ani = animation_home + "reddcoin_rocket.mp4"
@@ -100,7 +101,7 @@ def tip(bot,update):
                 send_text_msg(bot, update, self_tip_msg)
             else:
                 balance = str(balance)
-                amount = str(amount) 
+                amount = str(amount)
                 subprocess.run([core,"move",user,target,amount],stdout=subprocess.PIPE)
                 tip_msg = "@{0} tipped @{1} of {2} RDD".format(user, target, amount)
                 send_text_msg(bot, update, tip_msg)
@@ -128,6 +129,7 @@ def balance(bot,update):
         fiat_balance = "{0:,.3f}".format(fiat_balance)
         balance = "{0:,.8f}".format(balance)
         balance = balance.rstrip("0")
+        balance = balance.rstrip(".")
         balance_msg = "@{0} your current balance is: Ɍ<code>{1}</code> ≈ $<code>{2}</code>".format(user,balance,fiat_balance)
         send_text_msg(bot, update, balance_msg)
 
@@ -136,6 +138,7 @@ def price(bot,update):
     strainer = SoupStrainer("div", {"class": "details-panel-item--price bottom-margin-1x"})
     soup = BeautifulSoup(quote_page.content, "html.parser", parse_only=strainer)
     price = soup.find("span", {"class": "h2 text-semi-bold details-panel-item--price__value"})
+    price_change = ""
     if price != None:
         price = soup.find("span", {"class": "h2 text-semi-bold details-panel-item--price__value"}).get_text(strip=True)
     else:
@@ -163,7 +166,7 @@ def donate(bot,update):
     user_input = update.message.text[8:].strip()
     if user_input == "":
         qrcode_png = create_qr_code(dev_fund_address)
-        donate_msq = "Any donation is highly appreciated: {0}".format(dev_fund_address)
+        donate_msq = "Any donations are highly appreciated: {0}".format(dev_fund_address)
         send_photo_msg(bot, update, qrcode_png, donate_msq)
     else:
         withdraw(bot,update)
@@ -178,7 +181,7 @@ def withdraw(bot,update):
         no_parameters = "There is something missing! See /help for an example."
         send_text_msg(bot, update, no_parameters)
     elif user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\n With your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other wallets!"
         send_text_msg(bot, update, no_user_msg)
     else:
         if update.message.text.startswith("/donate"):
@@ -196,9 +199,13 @@ def withdraw(bot,update):
             send_text_msg(bot, update, empty_balance_msg)
         else:
             amount = str(amount)
-            tx = subprocess.run([core,"sendfrom",user,address,amount],stdout=subprocess.PIPE)
+            if walletpassphrase == "":
+                tx = subprocess.run([core,"sendfrom",user,address,amount],stdout=subprocess.PIPE)
+            else:
+                subprocess.run([core,"walletpassphrase", walletpassphrase,"1","false"],stdout=subprocess.PIPE)
+                tx = subprocess.run([core,"sendfrom",user,address,amount,"1"],stdout=subprocess.PIPE)
             tx = (tx.stdout.strip()).decode(encoding)
-            withdraw_msg = "@{0} has successfully withdrew to address <code>{1}</code> of <code>{2} RDD</code> (transaction: https://live.reddcoin.com/tx/{3})".format(user, address, amount, tx)
+            withdraw_msg = "@{0} has successfully withdrawn Ɍ<code>{1}</code> to address <code>{2}</code> (transaction: https://live.reddcoin.com/tx/{3})".format(user, amount, address, tx)
             send_text_msg(bot, update, withdraw_msg)
 
 def hi(bot,update):
@@ -290,7 +297,7 @@ def statistics(bot,update):
     send_text_msg(bot, update, block_height_msg + netstake_weight_msg + accounts_msg)
 
 def send_text_msg(bot, update, msg):
-    bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.HTML)
+    bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 def send_photo_msg(bot, update, photo, caption):
     bot.send_photo(chat_id=update.message.chat_id, photo=open(photo, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN)
@@ -308,25 +315,20 @@ def create_qr_code(value):
     qrcode_prefix = "reddcoin:"
     qrobj = pyqrcode.QRCode(qrcode_prefix + value, error = "H")
     qrobj.png(qrcode_png, scale=10, quiet_zone=1)
-    
     # Now open that png image to put the logo
     img = Image.open(qrcode_png)
     img = img.convert("RGBA")
     width, height = img.size
-    
     # Open the logo image and  define how big the logo we want to put in the qr code png
     logo = Image.open(qrcode_logo_img)
     logo_size = 80
-    
     # Calculate logo size and position
     xmin = ymin = int((width / 2) - (logo_size / 2))
     xmax = ymax = int((width / 2) + (logo_size / 2))
     logo = logo.resize((xmax - xmin, ymax - ymin))
-    
     # put the logo in the qr code and save image
     img.paste(logo, (xmin, ymin, xmax, ymax))
     img.save(image_home + qrcode_png)
-    
     return image_home + qrcode_png
 
 def strfdelta(tdelta, fmt="{D:02}d {H:02}h {M:02}m {S:02}s", inputtype="timedelta"):
