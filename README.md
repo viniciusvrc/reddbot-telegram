@@ -35,7 +35,7 @@
 ## Update from previous version to V2
 
 * Stop running bot: `pkill -f command.py` (killing process which contains 'command.py')
-* Install new dependencies: `pip3 install pyqrcode && pip3 install Image && pip3 install pypng && pip3 install emoji`
+* Install new dependencies: `pip3 install pyqrcode && pip3 install Image && pip3 install pypng && pip3 install emoji pip3 install python-telegram-bot --upgrade`
 * Download new script into reddbot-telegram-v2 folder: `git clone https://github.com/cryptoBUZE/reddbot-telegram reddbot-telegram-v2`
 * Change into reddbot-telegram-v2 directory: `cd reddbot-telegram-v2`
 * Set bot token: `sed -i 's/(token="")/(token="BOT_TOKEN")/g' command.py` (Replace BOT_TOKEN with token from Telegram BotFather)
