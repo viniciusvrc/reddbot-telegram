@@ -53,11 +53,11 @@ def commands(bot, update):
     else:
         user = " @" + user
     wave_emoji = get_emoji(":wave:")
-    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <code>username</code> = target user to tip (starting with @) \n <code>amount</code> = amount of Reddcoin to utilize \n <code>address</code> = Reddcoin address to withdraw to \n \n Tipping format: \n <code>/tip @username amount</code> \n \n Withdrawing format: \n <code>/withdraw address amount</code> \n \n Need more help? -> /help".format(user, wave_emoji)
+    commands_msg = "Hello{0} {1} Initiating commands /tip & /withdraw have a specific format. Use them like so: \n \n Parameters: \n <code>username</code> = target user to tip (starting with @) \n <code>amount</code> = amount of Ɍeddcoin to utilize \n <code>address</code> = Ɍeddcoin address to withdraw to \n \n Tipping format: \n <code>/tip @username amount</code> \n \n Withdrawing format: \n <code>/withdraw address amount</code> \n \n Need more help? -> /help".format(user, wave_emoji)
     send_text_msg(bot, update, commands_msg)
 
 def help(bot, update):
-    help_msg = "The following commands are at your disposal: /hi /commands /deposit /tip /donate /withdraw /balance /price /marketcap /statistics /moon /when moon|mars|jupiter|saturn|uranus|lambo\n \nExamples: \n<code>/tip @TechAdept 100</code>\n<code>/tip @CryptoGnasher 100</code>\n-> send a tip of 100 Reddcoins to our project lead Jay 'TechAdept' Laurence or to our lead dev John Nash\n<code>/donate 100</code>\n-> support Reddcoin team by donating them 100 Reddcoins\n<code>/withdraw {0} 100</code>\n-> send 100 Reddcoins to a specific address (in this example: dev fund raising address which is also used for /donate)".format(dev_fund_address)
+    help_msg = "The following commands are at your disposal: /hi /commands /deposit /tip /donate /withdraw /balance /price /marketcap /statistics /moon /when moon|mars|jupiter|saturn|uranus|lambo\n \nExamples: \n<code>/tip @TechAdept 100</code>\n<code>/tip @CryptoGnasher 100</code>\n-> send a tip of 100 Ɍeddcoins to our project lead Jay 'TechAdept' Laurence or to our lead dev John Nash\n<code>/donate 100</code>\n-> support Ɍeddcoin team by donating them 100 Ɍeddcoins\n<code>/withdraw {0} 100</code>\n-> send 100 Ɍeddcoins to a specific address (in this example: dev fund raising address which is also used for /donate)".format(dev_fund_address)
     send_text_msg(bot, update, help_msg)
 
 def about(bot, update):
@@ -67,7 +67,7 @@ def about(bot, update):
 def deposit(bot, update):
     user = update.message.from_user.username
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         result = subprocess.run([core,"getaccountaddress",user],stdout=subprocess.PIPE)
@@ -83,7 +83,7 @@ def tip(bot,update):
         no_parameters = "There is something missing! See /help for an example."
         send_text_msg(bot, update, no_parameters)
     elif user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         target = user_input.split(" ")[0]
@@ -107,7 +107,7 @@ def tip(bot,update):
                 balance = str(balance)
                 amount = str(amount)
                 subprocess.run([core,"move",user,target,amount],stdout=subprocess.PIPE)
-                tip_msg = "@{0} tipped @{1} of {2} RDD".format(user, target, amount)
+                tip_msg = "@{0} tipped @{1} of {2} ɌDD".format(user, target, amount)
                 send_text_msg(bot, update, tip_msg)
         else:
             wrong_format = "Error that user is not applicable. Need help? -> /help"
@@ -123,7 +123,7 @@ def balance(bot,update):
     price = float(price)
     user = update.message.from_user.username
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
@@ -165,9 +165,9 @@ def price(bot,update):
     if change_symbol != "":
         price_change = price_change.replace("(","")
         price_change = price_change.replace(")","")
-        price_msg = "1 Reddcoin is valued at $<code>{0}</code> Δ {1}<code>{2}</code> ≈ ₿<code>{3}</code>".format(price,change_symbol,price_change,sats)
+        price_msg = "1 Ɍeddcoin is valued at $<code>{0}</code> Δ {1}<code>{2}</code> ≈ ₿<code>{3}</code>".format(price,change_symbol,price_change,sats)
     else:
-        price_msg = "1 Reddcoin is valued at $<code>{0}</code> ≈ ₿<code>{1}</code>".format(price,sats)
+        price_msg = "1 Ɍeddcoin is valued at $<code>{0}</code> ≈ ₿<code>{1}</code>".format(price,sats)
     send_text_msg(bot, update, price_msg)
 
 def donate(bot,update):
@@ -189,7 +189,7 @@ def withdraw(bot,update):
         no_parameters = "There is something missing! See /help for an example."
         send_text_msg(bot, update, no_parameters)
     elif user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Reddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
         send_text_msg(bot, update, no_user_msg)
     else:
         if update.message.text.startswith("/donate"):
@@ -269,7 +269,7 @@ def marketcap(bot,update):
     marketcap_raw = soup.get_text().replace("\n","")
     marketcap_usd = marketcap_raw[:marketcap_raw.find("USD")]
     marketcap_btc = marketcap_raw[marketcap_raw.find("USD") + 3:marketcap_raw.find("BTC")]
-    marketcap_msg = "The current market cap of Reddcoin is valued at $<code>{0}</code> ≈ ₿<code>{1}</code>".format(marketcap_usd, marketcap_btc)
+    marketcap_msg = "The current market cap of Ɍeddcoin is valued at $<code>{0}</code> ≈ ₿<code>{1}</code>".format(marketcap_usd, marketcap_btc)
     send_text_msg(bot, update, marketcap_msg)
 
 def statistics(bot,update):
@@ -300,8 +300,8 @@ def statistics(bot,update):
     tada_emoji = emojize(":tada:", use_aliases=True)
     check_mark_emoji = emojize(":white_check_mark:", use_aliases=True)
     block_height_msg = "{0} With current block height of <code>{1}</code> there are <code>{2}</code> left to block <code>{3}</code> {4} -> Countdown: <code>{5}</code>\n".format(check_mark_emoji, block_height, diff, next_party_block, tada_emoji, time_to_party)
-    netstake_weight_msg = "{0} There are currently <code>{1} ({2}%)</code> Reddcoins being staked from a total of <code>{3}</code>\n".format(check_mark_emoji, net_stake_weight, staking_quota, money_supply)
-    accounts_msg = "{0} Our famous Telegram tipping bot {1} is currently holding <code>{2}</code> Reddcoins from <code>{3}</code> users".format(check_mark_emoji, bot_name, total_balance, total_users)
+    netstake_weight_msg = "{0} There are currently <code>{1} ({2}%)</code> Ɍeddcoins being staked from a total of <code>{3}</code>\n".format(check_mark_emoji, net_stake_weight, staking_quota, money_supply)
+    accounts_msg = "{0} Our famous Telegram tipping bot {1} is currently holding <code>{2}</code> Ɍeddcoins from <code>{3}</code> users".format(check_mark_emoji, bot_name, total_balance, total_users)
     send_text_msg(bot, update, block_height_msg + netstake_weight_msg + accounts_msg)
 
 def send_text_msg(bot, update, msg):
@@ -427,5 +427,8 @@ dispatcher.add_handler(balance_handler)
 
 help_handler = CommandHandler("help", help)
 dispatcher.add_handler(help_handler)
+
+about_handler = CommandHandler("about", about)
+dispatcher.add_handler(about_handler)
 
 updater.start_polling()
