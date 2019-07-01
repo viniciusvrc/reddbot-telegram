@@ -1,4 +1,4 @@
-# Reddbot - Telegram Reddcoin Tipbot v2.0
+# Reddbot - Telegram Reddcoin Tipbot v2.1
  
 #### Reddcoin crypto currency tipbot for [Telegram](https://telegram.org)
 
@@ -13,7 +13,7 @@
 *  `pip3 install Image`
 *  `pip3 install pypng`
 *  `pip3 install emoji`
-*  `pip3 install python-telegram-bot --upgrade`
+*  `pip3 install python-telegram-bot==12.0.0b1 --upgrade
 
 * In order to run the tip-bot effectively, a Bitcoin-core based client is needed. For this git Reddcoin-Core is used , but any major alternate crypto-currency client could easily be incorperated. 
 
@@ -35,7 +35,7 @@
 ## Update from previous version to V2
 
 * Stop running bot: `pkill -f command.py` (killing process which contains 'command.py')
-* Install new dependencies: `pip3 install pyqrcode && pip3 install Image && pip3 install pypng && pip3 install emoji && pip3 install python-telegram-bot --upgrade`
+* Install new dependencies: `pip3 install pyqrcode && pip3 install Image && pip3 install pypng && pip3 install emoji && pip3 install python-telegram-bot==12.0.0b1 --upgrade`
 * Download new script into reddbot-telegram-v2 folder: `git clone https://github.com/cryptoBUZE/reddbot-telegram reddbot-telegram-v2`
 * Change into reddbot-telegram-v2 directory: `cd reddbot-telegram-v2`
 * Set bot token: `sed -i 's/(token="")/(token="BOT_TOKEN")/g' command.py` (Replace BOT_TOKEN with token from Telegram BotFather)
@@ -51,7 +51,7 @@
 *  Set path to Reddcoin core wallet -> Replace REDDCOIN_CORE with path to reddcoin core daemon file
 *  Set path to script directory -> Replace REDDBOT_HOME with path of reddbot-telegram-v2 directory with help of sed command (don't forget / at the end)
 * If bot python instance is still running now it's time to kill this process
-* Start new script with python -> Legacy warning message might pop up but can be ignored and will be fixed with next version
+* Start new script with python -> There should be no legacy warning message with latest version of python-telegram-bot (v12)
 
 ### Setting up the bot as so still leaves the wallet unencrypted, so please go to extra measures to provide extra security. Make sure to have SSH encryption on whatever device/droplet you run it on. 
 
