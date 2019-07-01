@@ -6,6 +6,7 @@ Created on 07.05.2019
 @author: owebb
 '''
 
+from config import *
 import os
 import logging
 from string import Formatter
@@ -24,23 +25,6 @@ from telegram.ext import (Updater, CommandHandler)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Global variables
-bot_name = "@Reddcoin_bot"
-encoding = "utf-8"
-core = "/home/rdd/reddcoind"
-data_origin = "https://coinmarketcap.com/currencies/reddcoin"
-reddbot_home = "/home/rdd/reddbot/"
-dev_fund_address = "Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc"
-dev_fund_balance_api_url = "https://live.reddcoin.com/api/addr/" + dev_fund_address + "/balance"
-dev_fund_tx = "http://live.reddcoin.com/api/txs/?address=" + dev_fund_address
-walletpassphrase = ""
-animation_home = reddbot_home + "animation/"
-image_home = reddbot_home + "image/"
-reddcoin_rocket_ani = animation_home + "reddcoin_rocket.mp4"
-qrcode_logo_img = image_home + "rdd_qrcode_logo.png"
-hall_of_fame_max_entries = 10
-admin_list = ["TechAdept", "CryptoGnasher", "Chris_NL_1152", "cryptoBUZE"]
-
 def commands(update, context):
     user = update.message.from_user.username
     if user is None:
@@ -52,7 +36,7 @@ def commands(update, context):
     send_text_msg(update, context, commands_msg)
 
 def help(update, context):
-    help_msg = "The following commands are at your disposal: /hi /commands /deposit /tip /donate /withdraw /balance /price /marketcap /statistics /moon /about \n \nExamples: \n<code>/tip @TechAdept 100</code>\n<code>/tip @CryptoGnasher 100</code>\n-> send a tip of 100 Ɍeddcoins to our project lead Jay 'TechAdept' Laurence or to our lead dev John Nash\n<code>/donate 100</code>\n-> support Ɍeddcoin team by donating them 100 Ɍeddcoins\n<code>/withdraw {0} 100</code>\n-> send 100 Ɍeddcoins to a specific address (in this example: dev fund raising address which is also used for /donate)".format(dev_fund_address)
+    help_msg = "The following commands are at your disposal: /hi /commands /deposit /tip /donate /withdraw /balance /price /marketcap /statistics /moon /about /hallOfFame \n \nExamples: \n<code>/tip @TechAdept 100</code>\n<code>/tip @CryptoGnasher 100</code>\n-> send a tip of 100 Ɍeddcoins to our project lead Jay 'TechAdept' Laurence or to our lead dev John Nash\n<code>/donate 100</code>\n-> support Ɍeddcoin team by donating them 100 Ɍeddcoins\n<code>/withdraw {0} 100</code>\n-> send 100 Ɍeddcoins to a specific address (in this example: dev fund raising address which is also used for /donate)".format(dev_fund_address)
     send_text_msg(update, context, help_msg)
 
 def about(update, context):
@@ -61,8 +45,9 @@ def about(update, context):
 
 def deposit(update, context):
     user = update.message.from_user.username
+    user_first_name = update.message.from_user.first_name
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey {0}, please set a Telegram username in your profile settings first.\nWith your unique username you can access your <b>Telegram Reddcoin wallet</b>. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!".format(user_first_name)
         send_text_msg(update, context, no_user_msg)
     else:
         result = subprocess.run([core,"getaccountaddress",user],stdout=subprocess.PIPE)
@@ -73,12 +58,13 @@ def deposit(update, context):
 
 def tip(update, context):
     user = update.message.from_user.username
+    user_first_name = update.message.from_user.first_name
     user_input = update.message.text[5:].strip()
     if user_input == "":
         no_parameters = "There is something missing! See /help for an example."
         send_text_msg(update, context, no_parameters)
     elif user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey {0}, please set a Telegram username in your profile settings first.\nWith your unique username you can access your <b>Telegram Reddcoin wallet</b>. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!".format(user_first_name)
         send_text_msg(update, context, no_user_msg)
     else:
         target = user_input.split(" ")[0]
@@ -109,6 +95,8 @@ def tip(update, context):
             send_text_msg(update, context, wrong_format_msg)
 
 def balance(update, context):
+    user = update.message.from_user.username
+    user_first_name = update.message.from_user.first_name
     quote_page = requests.get(data_origin)
     strainer = SoupStrainer("div", {"class": "details-panel-item--price bottom-margin-1x"})
     soup = BeautifulSoup(quote_page.content, "html.parser", parse_only=strainer)
@@ -116,9 +104,8 @@ def balance(update, context):
     if price != None:
         price = soup.find("span", {"class": "h2 text-semi-bold details-panel-item--price__value"}).get_text(strip=True)
     price = float(price)
-    user = update.message.from_user.username
     if user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey {0}, please set a Telegram username in your profile settings first.\nWith your unique username you can access your <b>Telegram Reddcoin wallet</b>. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!".format(user_first_name)
         send_text_msg(update, context, no_user_msg)
     else:
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
@@ -176,22 +163,27 @@ def newDonation(update, context, allowed=False):
     if allowed:
         user_input_user_id = "@" + user_id
         user_input_user_first_name = update.message.from_user.first_name
+        user_input_user_last_name = update.message.from_user.last_name
+        if user_input_user_last_name == None:
+            user_input_user_display_name = user_input_user_first_name
+        else:
+            user_input_user_display_name = user_input_user_first_name + " " + user_input_user_last_name
         user_input_user_amount = update.message.text[8:].strip().split(" ")[0]
-        addDonation(update, context, user_input_user_id, user_input_user_first_name, user_input_user_amount)
+        addDonation(update, context, user_input_user_id, user_input_user_display_name, user_input_user_amount)
     elif user_id in admin_list:
         user_input = update.message.text.partition(' ')[2]
         user_input_user_id = ''.join(user_input.partition(" ")).split(" ")[0]
-        user_input_user_first_name_and_amount = ''.join(user_input.partition(" ")).split(user_input_user_id)[1]
-        user_input_user_first_name = user_input_user_first_name_and_amount[:user_input_user_first_name_and_amount.rfind(' ')].strip()
-        user_input_user_amount = user_input_user_first_name_and_amount[user_input_user_first_name_and_amount.rfind(' '):].strip()
-        addDonation(update, context, user_input_user_id, user_input_user_first_name, user_input_user_amount)
+        user_input_user_display_name_and_amount = ''.join(user_input.partition(" ")).split(user_input_user_id)[1]
+        user_input_user_display_name = user_input_user_display_name_and_amount[:user_input_user_display_name_and_amount.rfind(' ')].strip()
+        user_input_user_amount = user_input_user_display_name_and_amount[user_input_user_display_name_and_amount.rfind(' '):].strip()
+        addDonation(update, context, user_input_user_id, user_input_user_display_name, user_input_user_amount)
     else:
         send_user_not_allowed_text_msg(update, context)
 
-def addDonation(update, context, user_input_user_id, user_input_user_first_name, user_input_user_amount):
+def addDonation(update, context, user_input_user_id, user_input_user_display_name, user_input_user_amount):
     # Get JSON data to store donation
     json_obj = readJSON()
-    user_key = user_input_user_id + " " + user_input_user_first_name
+    user_key = user_input_user_id + " " + user_input_user_display_name
     tada_emoji = get_emoji(":tada:")
     if user_key in json_obj:
         donation_amount = json_obj[user_key]
@@ -212,9 +204,8 @@ def removeDonor(update, context):
         json_obj = readJSON()
         user_input = update.message.text.partition(' ')[2]
         user_input_user_id = ''.join(user_input.partition(" ")).split(" ")[0]
-        user_input_user_first_name = ''.join(user_input.partition(" ")).split(user_input_user_id)[1]
-        user_key = user_input_user_id + " " + user_input_user_first_name.strip()
-        
+        user_input_user_display_name = ''.join(user_input.partition(" ")).split(user_input_user_id)[1]
+        user_key = user_input_user_id + " " + user_input_user_display_name.strip()
         if user_key in json_obj:
             del json_obj[user_key]
             remove_msg = "Donor '{0}' was removed from hall of fame list.".format(user_key)
@@ -227,34 +218,43 @@ def removeDonor(update, context):
         send_user_not_allowed_text_msg(update, context)
 
 def hallOfFame(update, context):
-    # Get list of donors
+    user_id = update.message.from_user.username
+    user_input = update.message.text[12:].strip().lower()
     json_obj = readJSON()
     counter = 0
-    rank = {1 : "🥇", 2 : "🥈", 3 : "🥉", 4 : "🎖", 5 : "🎖", 6 : "🎖", 7 : "🎖", 8 : "🎖", 9 : "🎖", 10 : "🎖"}
-    tada_emoji = get_emoji(":tada:")
-    hall_of_fame_msg = "<b>Top {0} Ɍeddcoin donors</b> {1}\n".format(hall_of_fame_max_entries, tada_emoji)
-    for key, value in sorted(json_obj.items(), key=lambda item: item[1], reverse=True):
-        counter += 1
-        if counter > hall_of_fame_max_entries:
-            break
-        else:
-            username = key.split(" ")[0]
-            display_name = key.replace(username, "")
-            html_username_link = '<a href="#/im?p=%40' + username[1:] + '">' + username + '</a>' + display_name
-            value = "{0:,.8f}".format(value).rstrip("0").rstrip(".")
-            hall_of_fame_msg += rank[counter] + " " + html_username_link + "\n-> Ɍ<code>" + value + "</code>\n"
-    hall_of_fame_msg += "_____________________________\n"
-    hall_of_fame_msg += "<b>We also want to thank the following anonymous donors:</b>\n"
-    hall_of_fame_msg += "🥇 Anonymous 1 -> Ɍ<code>1,500,000</code>\n"
-    hall_of_fame_msg += "🥈 Anonymous 2 -> Ɍ<code>1,000,000</code>\n"
-    hall_of_fame_msg += "🥉 Anonymous 3 -> Ɍ<code>500,000</code>\n"
-    hall_of_fame_msg += "_____________________________\n"
-    hall_of_fame_msg += "‼ Use /donate 'amount of RDD' to support Ɍeddcoin development team and you might be on this list!"
+    if user_id is not None and user_input == "position":
+        for key, value in sorted(json_obj.items(), key=lambda item: item[1], reverse=True):
+            counter += 1
+            if user_id in key:
+                hall_of_fame_msg = "Hey @{0}, your current position in hall of fame donation list is: {1}".format(user_id, counter)
+                break;
+    else:
+        rank = {1 : "🥇", 2 : "🥈", 3 : "🥉", 4 : "🎖", 5 : "🎖", 6 : "🎖", 7 : "🎖", 8 : "🎖", 9 : "🎖", 10 : "🎖"}
+        tada_emoji = get_emoji(":tada:")
+        hall_of_fame_msg = "<b>Top {0} Ɍeddcoin donors</b> {1}\n".format(hall_of_fame_max_entries, tada_emoji)
+        for key, value in sorted(json_obj.items(), key=lambda item: item[1], reverse=True):
+            counter += 1
+            if counter > hall_of_fame_max_entries:
+                break
+            else:
+                username = key.split(" ")[0]
+                display_name = key.replace(username, "")
+                html_username_link = '<a href="#/im?p=%40' + username[1:] + '">' + username + '</a>' + display_name
+                value = "{0:,.8f}".format(value).rstrip("0").rstrip(".")
+                hall_of_fame_msg += rank[counter] + " " + html_username_link + "\n-> Ɍ<code>" + value + "</code>\n"
+        hall_of_fame_msg += "_____________________________\n"
+        hall_of_fame_msg += "<b>We also want to thank the following anonymous donors:</b>\n"
+        hall_of_fame_msg += "🥇 Anonymous 1 -> Ɍ<code>1,500,000</code>\n"
+        hall_of_fame_msg += "🥈 Anonymous 2 -> Ɍ<code>1,000,000</code>\n"
+        hall_of_fame_msg += "🥉 Anonymous 3 -> Ɍ<code>500,000</code>\n"
+        hall_of_fame_msg += "_____________________________\n"
+        hall_of_fame_msg += "‼ Use /donate 'amount of RDD' to support Ɍeddcoin development team and you might be on this list!"
     send_text_msg(update, context, hall_of_fame_msg)
 
 def donate(update, context):
     user_input = update.message.text.replace(bot_name,"")
     user_input = user_input[8:].strip()
+    withdraw_successful = False
     if user_input == "":
         qrcode_png = create_qr_code(dev_fund_address)
         donate_qr_msg = "{0}".format(dev_fund_address)
@@ -262,12 +262,15 @@ def donate(update, context):
         send_photo_msg(update, context, qrcode_png, donate_qr_msg)
         send_text_msg(update, context, donate_text_msg)
     else:
-        withdraw(update, context)
-        newDonation(update, context, True)
+        withdraw_successful = withdraw(update, context)
+        if withdraw_successful:
+            newDonation(update, context, True)
 
 def withdraw(update, context):
     user = update.message.from_user.username
+    user_first_name = update.message.from_user.first_name
     user_input = update.message.text.replace(bot_name,"")
+    withdraw_successful = False
     if user_input.startswith("/donate"):
         user_input = user_input[8:].strip()
     else:
@@ -276,7 +279,7 @@ def withdraw(update, context):
         no_parameters_msg = "There is something missing! See /help for an example."
         send_text_msg(update, context, no_parameters_msg)
     elif user is None:
-        no_user_msg = "Hey, please set a telegram username in your profile settings first.\nWith your unique username you can access your wallet. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!"
+        no_user_msg = "Hey {0}, please set a Telegram username in your profile settings first.\nWith your unique username you can access your <b>Telegram Reddcoin wallet</b>. If you change your username you might loose access to your Ɍeddcoins! This wallet is separated from any other wallets and cannot be connected to other ones!".format(user_first_name)
         send_text_msg(update, context, no_user_msg)
     else:
         if update.message.text.startswith("/donate"):
@@ -288,7 +291,10 @@ def withdraw(update, context):
         result = subprocess.run([core,"getbalance",user],stdout=subprocess.PIPE)
         balance = (result.stdout.strip()).decode(encoding)
         balance = float(balance)
-        if balance < amount:
+        if amount < 0.0:
+            negative_amount_msg = "I see what you did there!"
+            send_text_msg(update, context, negative_amount_msg)
+        elif balance < amount:
             neutral_face_emoji = get_emoji(":neutral_face:")
             empty_balance_msg = "Sorry @{0}, but you have insufficient funds {1}".format(user, neutral_face_emoji)
             send_text_msg(update, context, empty_balance_msg)
@@ -301,7 +307,9 @@ def withdraw(update, context):
                 tx = subprocess.run([core,"sendfrom",user,address,amount,"1"],stdout=subprocess.PIPE)
             tx = (tx.stdout.strip()).decode(encoding)
             withdraw_msg = "@{0} has successfully withdrawn Ɍ<code>{1}</code> to address <code>{2}</code> (transaction: https://live.reddcoin.com/tx/{3})".format(user, amount, address, tx)
+            withdraw_successful = True
             send_text_msg(update, context, withdraw_msg)
+    return withdraw_successful
 
 def hi(update, context):
     user = update.message.from_user.username
@@ -473,7 +481,7 @@ def error(update, context):
 
 def main():
     # Create the Updater and pass it your bot's token.
-    updater = Updater(token="", use_context=True)
+    updater = Updater(token=bot_token, use_context=True)
     
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
