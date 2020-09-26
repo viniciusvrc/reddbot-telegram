@@ -445,15 +445,22 @@ def send_user_not_allowed_text_msg(update, context):
     admin_msg = "This function is restricted to following admins:{0}".format(telegram_admin_user_list) 
     send_text_msg(update, context, admin_msg)
 
+def resolve_reply_to_id(update):
+    if update.message.chat_id < 0:
+        # We are in a group message, reply to the original message
+        return update.message.message_id
+    # We are in a private chat, don't reply
+    return None
+
 def send_text_msg(update, context, msg):
-    context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True)
+    context.bot.send_message(chat_id=update.message.chat_id, text=msg, parse_mode=ParseMode.HTML, disable_web_page_preview=True, reply_to_message_id=resolve_reply_to_id(update))
     print("chat-id: " + str(update.message.chat_id))
 
 def send_photo_msg(update, context, photo, caption):
-    context.bot.send_photo(chat_id=update.message.chat_id, photo=open(photo, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN)
+    context.bot.send_photo(chat_id=update.message.chat_id, photo=open(photo, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN, reply_to_message_id=resolve_reply_to_id(update))
 
 def send_animation_msg(update, context, animation, caption):
-    context.bot.sendAnimation(chat_id=update.message.chat_id, animation=open(animation, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN)
+    context.bot.sendAnimation(chat_id=update.message.chat_id, animation=open(animation, "rb"), caption=caption, parse_mode=ParseMode.MARKDOWN, reply_to_message_id=resolve_reply_to_id(update))
 
 def get_emoji(emoji_shortcode):
     emoji = emojize(emoji_shortcode, use_aliases=True)
