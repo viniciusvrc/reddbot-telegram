@@ -7,13 +7,7 @@
 
 *  `apt-get install python3`
 *  `apt-get install python3-pip`
-*  `pip3 install requests`
-*  `pip3 install beautifulsoup4`
-*  `pip3 install pyqrcode`
-*  `pip3 install Image`
-*  `pip3 install pypng`
-*  `pip3 install emoji`
-*  `pip3 install apscheduler`
+*  `pip3 install -r requirements.txt`
 *  `pip3 install python-telegram-bot==12.0.0b1 --upgrade`
 
 * In order to run the tip-bot effectively, a Bitcoin-core based client is needed. For this git Reddcoin Core Wallet is used, but any major alternate crypto-currency client could easily be incorperated.
